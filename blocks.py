@@ -49,11 +49,13 @@ class Block(Sprite):
             ),
         }
 
-    def draw_anchors(self, win):
+    def draw_anchors(self, win, exclude: list = []):
         surf = Surface((12, 12))
         surf.fill("red")
         rect = surf.get_rect()
         for a in self.anchors:
+            if a in exclude:
+                continue
             rect.center = self.anchors[a]
             win.blit(surf, rect)
 
