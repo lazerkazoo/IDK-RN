@@ -1,5 +1,5 @@
 import pygame
-from pygame.constants import K_LSHIFT, KEYDOWN
+from pygame.constants import KEYDOWN
 from pygame.font import Font
 from pygame.rect import Rect
 from pygame.sprite import Group, Sprite
@@ -21,15 +21,19 @@ class Block(Sprite):
             "right": (0, 0),
         }
         self.selected = False
+        self.image: Surface
 
     def update_image(self):
+        print("updating image")
         self.update_rect()
 
     def update_rect(self):
+        print("updating rect")
         self.rect: Rect = self.image.get_rect(center=self.pos)
         self.update_anchors()
 
     def update_anchors(self):
+        print("updating anchors")
         self.anchors = {
             "top": (
                 (self.rect.topleft[0] + self.rect.topright[0]) / 2,

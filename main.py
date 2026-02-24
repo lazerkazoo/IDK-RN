@@ -5,13 +5,15 @@ from pygame.font import Font
 from pygame.sprite import Group
 from pygame.time import Clock
 
-from blocks import Block, ImageBlock, TextBlock
+from blocks import ImageBlock, TextBlock
 
 pygame.init()
 
 win = set_mode((0, 0), FULLSCREEN, vsync=1)
 
 clock = Clock()
+
+width, height = pygame.display.get_window_size()
 
 # fonts
 font = Font(size=64)
@@ -24,16 +26,16 @@ labels = Group()
 
 blocks = Group()
 
-
-last_mouse_pos = (0, 0)
-
 # connections
 sel1, sel2 = None, None
 lines = []
 
+# other
+last_mouse_pos = (0, 0)
+
 
 def run():
-    global last_mouse_pos, sel1, sel2, lines, mouse_pos
+    global last_mouse_pos, mouse_pos, sel1, sel2, lines
 
     mousej_inputs = pygame.mouse.get_just_pressed()
     mouse_inputs = pygame.mouse.get_pressed()
@@ -89,9 +91,9 @@ def draw():
             b.draw_anchors(win, sel1[1])
         pygame.draw.aaline(win, "white", sel1[0].anchors[sel1[1]], mouse_pos, 5)
 
-    for l in lines:
-        b1, a1 = l[0]
-        b2, a2 = l[1]
+    for line in lines:
+        b1, a1 = line[0]
+        b2, a2 = line[1]
         pygame.draw.aaline(win, "white", b1.anchors[a1], b2.anchors[a2], 5)
 
     buttons.draw(win)
