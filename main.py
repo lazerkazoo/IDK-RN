@@ -1,11 +1,11 @@
 import pygame
-from pygame.constants import FULLSCREEN, QUIT
+from pygame.constants import FULLSCREEN, K_LSHIFT, QUIT
 from pygame.display import set_mode
 from pygame.font import Font
 from pygame.sprite import Group
 from pygame.time import Clock
 
-from blocks import Block, TextBlock
+from blocks import Block, ImageBlock, TextBlock
 
 pygame.init()
 
@@ -47,7 +47,10 @@ def run():
             quit()
 
     if mousej_inputs[2]:
-        TextBlock(blocks, mouse_pos, font)
+        if key_inputs[K_LSHIFT]:
+            ImageBlock(blocks, mouse_pos)
+        else:
+            TextBlock(blocks, mouse_pos, font)
 
     if mousej_inputs[0]:
         break_line = True

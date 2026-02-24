@@ -114,7 +114,7 @@ class TextBlock(Block):
             new_txt += f" {i} " if i == "\n" else i
 
         color = "#403930" if self.selected else "gray15"
-        self.image = self.font.render(f" {new_txt} ", True, "white", color)
+        self.image = self.font.render(f" {new_txt} ", True, "white", color).convert()
         return super().update_image()
 
     def while_selected(
@@ -147,3 +147,21 @@ class TextBlock(Block):
     def on_deselected(self):
         super().on_deselected()
         self.update_image()
+
+
+class ImageBlock(Block):
+    def init_data(self):
+        self.fp = "dog.jpg"
+        self.max_size = (256, 256)
+        return super().init_data()
+
+    def update_image(self):
+        original = pygame.image.load(self.fp).convert_alpha()
+        ow, oh = original.get_size()
+        mw, mh = self.max_size
+
+        scale = min(mw / ow, mh / oh)
+        new_size = (int(ow * scale), int(oh * scale))
+
+        self.image = pygame.transform.smoothscale(original, new_size)
+        return super().update_image()
