@@ -13,6 +13,7 @@ class Block(Sprite):
         self.pos = pos
         self.init_data()
         self.update_image()
+        self.update_anchors()
 
     def init_data(self):
         self.anchors = {
@@ -23,12 +24,17 @@ class Block(Sprite):
         }
         self.selected = False
         self.image: Surface
+        self.last_image = None
 
     def update_image(self):
         self.update_rect()
 
     def update_rect(self):
-        self.rect: Rect = self.image.get_rect(center=self.pos)
+        if self.last_image != self.image:
+            self.rect: Rect = self.image.get_rect()
+        self.rect.center = self.pos
+
+        self.last_image = self.image
         self.update_anchors()
 
     def update_anchors(self):

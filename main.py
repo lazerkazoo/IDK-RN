@@ -1,3 +1,5 @@
+from random import random
+
 import pygame
 from pygame.constants import FULLSCREEN, K_LSHIFT, QUIT
 from pygame.display import set_mode
