@@ -1,0 +1,147 @@
+import pygame
+from pygame.constants import K_LSHIFT, KEYDOWN
+from pygame.font import Font
+from pygame.rect import Rect
+from pygame.sprite import Group, Sprite
+from pygame.surface import Surface
+
+
+class Block(Sprite):
+    def __init__(self, group: Group, pos: tuple[int, int]):
+        super().__init__(group)
+        self.init_data()
+        self.pos = pos
+        self.update_image()
+
+    def init_data(self):
+        self.anchors = {
+            "top": (0, 0),
+            "bottom": (0, 0),
+            "left": (0, 0),
+            "right": (0, 0),
+        }
+        self.selected = False
+
+    def update_image(self):
+        self.update_rect()
+
+    def update_rect(self):
+        self.rect: Rect = self.image.get_rect(center=self.pos)
+        self.update_anchors()
+
+    def update_anchors(self):
+        self.anchors = {
+            "top": (
+                (self.rect.topleft[0] + self.rect.topright[0]) / 2,
+                (self.rect.topleft[1] + self.rect.topright[1]) / 2,
+            ),
+            "bottom": (
+                (self.rect.bottomleft[0] + self.rect.bottomright[0]) / 2,
+                (self.rect.bottomleft[1] + self.rect.bottomright[1]) / 2,
+            ),
+            "left": (
+                (self.rect.topleft[0] + self.rect.bottomleft[0]) / 2,
+                (self.rect.topleft[1] + self.rect.bottomleft[1]) / 2,
+            ),
+            "right": (
+                (self.rect.bottomright[0] + self.rect.topright[0]) / 2,
+                (self.rect.bottomright[1] + self.rect.topright[1]) / 2,
+            ),
+        }
+
+    def draw_anchors(self, win):
+        surf = Surface((12, 12))
+        surf.fill("red")
+        rect = surf.get_rect()
+        for a in self.anchors:
+            rect.center = self.anchors[a]
+            win.blit(surf, rect)
+
+    def handle_dragging(self, mouse_motion):
+        self.pos = (self.pos[0] + mouse_motion[0], self.pos[1] + mouse_motion[1])
+        self.update_rect()
+
+    def while_selected(
+        self, mousej_inputs, mouse_inputs, mouse_pos, mouse_motion, key_inputs, events
+    ):
+        pass
+
+    def on_selected(self):
+        self.selected = True
+
+    def on_deselected(self):
+        self.selected = False
+
+    def update(
+        self, mousej_inputs, mouse_inputs, mouse_pos, mouse_motion, key_inputs, events
+    ):
+        if mousej_inputs[0]:
+            if self.rect.collidepoint(mouse_pos):
+                self.on_selected()
+            else:
+                self.on_deselected()
+
+        if self.selected:
+            if mouse_inputs[0]:
+                self.handle_dragging(mouse_motion)
+            self.while_selected(
+                mousej_inputs,
+                mouse_inputs,
+                mouse_pos,
+                mouse_motion,
+                key_inputs,
+                events,
+            )
+
+        if mouse_inputs[1]:
+            self.handle_dragging(mouse_motion)
+
+
+class TextBlock(Block):
+    def __init__(self, group: Group, pos: tuple[int, int], font: Font):
+        self.font = font
+        return super().__init__(group, pos)
+
+    def init_data(self):
+        self.text = "TEXT"
+        return super().init_data()
+
+    def update_image(self):
+        new_txt = ""
+        for i in self.text:
+            new_txt += f" {i} " if i == "\n" else i
+
+        color = "#403930" if self.selected else "gray15"
+        self.image = self.font.render(f" {new_txt} ", True, "white", color)
+        return super().update_image()
+
+    def while_selected(
+        self, mousej_inputs, mouse_inputs, mouse_pos, mouse_motion, key_inputs, events
+    ):
+        for event in events:
+            if event.type == KEYDOWN:
+                self.text = "" if self.text == "TEXT" else self.text
+                name = pygame.key.name(event.key)
+
+                if name == "backspace":
+                    self.text = self.text[: len(self.text) - 1]
+                    self.update_image()
+                elif name == "return":
+                    self.text += "\n"
+                    self.update_image()
+                elif name == "space":
+                    self.text += " "
+                    self.update_image()
+                if len(name) > 1:
+                    continue
+
+                self.text += name
+                self.update_image()
+
+    def on_selected(self):
+        super().on_selected()
+        self.update_image()
+
+    def on_deselected(self):
+        super().on_deselected()
+        self.update_image()
