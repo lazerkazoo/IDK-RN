@@ -1,3 +1,5 @@
+from os.path import exists
+
 import pygame
 from pygame.constants import K_DELETE, KEYDOWN
 from pygame.font import Font
@@ -158,9 +160,12 @@ class TextBlock(Block):
 
 
 class ImageBlock(Block):
+    def __init__(self, group: Group, pos: tuple[int, int], fp: str):
+        self.fp = fp
+        super().__init__(group, pos)
+
     def init_data(self):
-        self.fp = "dog.jpg"
-        self.max_size = (256, 256)
+        self.max_size = (256 / 2, 256 / 2)
         return super().init_data()
 
     def update_image(self):

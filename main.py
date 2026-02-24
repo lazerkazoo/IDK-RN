@@ -1,4 +1,4 @@
-from random import random
+from tkinter.filedialog import askopenfilename
 
 import pygame
 from pygame.constants import FULLSCREEN, K_LSHIFT, QUIT
@@ -54,8 +54,17 @@ def run():
 
     if mousej_inputs[2]:
         if key_inputs[K_LSHIFT]:
+            pygame.display.set_mode((100, 100))
             pygame.display.iconify()
-            ImageBlock(blocks, mouse_pos).fp = input("image path -> ")
+            fp = askopenfilename(
+                filetypes=[
+                    ("Image File", ["*.png", "*.jpg", "*.webp"]),
+                    ("Vector File", "*.svg"),
+                ]
+            )
+            if fp:
+                dog = ImageBlock(blocks, mouse_pos, fp)
+                dog.fp = fp
             set_mode((0, 0), FULLSCREEN, vsync=1)
         else:
             TextBlock(blocks, mouse_pos, font)
