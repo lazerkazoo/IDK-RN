@@ -1,5 +1,5 @@
 import pygame
-from pygame.constants import KEYDOWN
+from pygame.constants import K_DELETE, KEYDOWN
 from pygame.font import Font
 from pygame.rect import Rect
 from pygame.sprite import Group, Sprite
@@ -9,8 +9,9 @@ from pygame.surface import Surface
 class Block(Sprite):
     def __init__(self, group: Group, pos: tuple[int, int]):
         super().__init__(group)
-        self.init_data()
+        self.group = group
         self.pos = pos
+        self.init_data()
         self.update_image()
 
     def init_data(self):
@@ -24,33 +25,18 @@ class Block(Sprite):
         self.image: Surface
 
     def update_image(self):
-        print("updating image")
         self.update_rect()
 
     def update_rect(self):
-        print("updating rect")
         self.rect: Rect = self.image.get_rect(center=self.pos)
         self.update_anchors()
 
     def update_anchors(self):
-        print("updating anchors")
         self.anchors = {
-            "top": (
-                (self.rect.topleft[0] + self.rect.topright[0]) / 2,
-                (self.rect.topleft[1] + self.rect.topright[1]) / 2,
-            ),
-            "bottom": (
-                (self.rect.bottomleft[0] + self.rect.bottomright[0]) / 2,
-                (self.rect.bottomleft[1] + self.rect.bottomright[1]) / 2,
-            ),
-            "left": (
-                (self.rect.topleft[0] + self.rect.bottomleft[0]) / 2,
-                (self.rect.topleft[1] + self.rect.bottomleft[1]) / 2,
-            ),
-            "right": (
-                (self.rect.bottomright[0] + self.rect.topright[0]) / 2,
-                (self.rect.bottomright[1] + self.rect.topright[1]) / 2,
-            ),
+            "top": self.rect.midtop,
+            "bottom": self.rect.midbottom,
+            "left": self.rect.midleft,
+            "right": self.rect.midright,
         }
 
     def draw_anchors(self, win, exclude: list = []):
@@ -70,6 +56,8 @@ class Block(Sprite):
     def while_selected(
         self, mousej_inputs, mouse_inputs, mouse_pos, mouse_motion, key_inputs, events
     ):
+        if key_inputs[K_DELETE]:
+            self.group.remove(self)
         pass
 
     def on_selected(self):
@@ -79,7 +67,14 @@ class Block(Sprite):
         self.selected = False
 
     def update(
-        self, mousej_inputs, mouse_inputs, mouse_pos, mouse_motion, key_inputs, events
+        self,
+        mousej_inputs,
+        mouser_inputs,
+        mouse_inputs,
+        mouse_pos,
+        mouse_motion,
+        key_inputs,
+        events,
     ):
         if mousej_inputs[0]:
             if self.rect.collidepoint(mouse_pos):
@@ -143,6 +138,9 @@ class TextBlock(Block):
 
                 self.text += name
                 self.update_image()
+        return super().while_selected(
+            mousej_inputs, mouse_inputs, mouse_pos, mouse_motion, key_inputs, events
+        )
 
     def on_selected(self):
         super().on_selected()
@@ -160,7 +158,7 @@ class ImageBlock(Block):
         return super().init_data()
 
     def update_image(self):
-        original = pygame.image.load(self.fp).convert_alpha()
+        original = pygame.image.load(self.fp).convert()
         ow, oh = original.get_size()
         mw, mh = self.max_size
 

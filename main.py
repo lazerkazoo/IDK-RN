@@ -29,6 +29,7 @@ blocks = Group()
 # connections
 sel1, sel2 = None, None
 lines = []
+LINE_WIDTH = 5
 
 # other
 last_mouse_pos = (0, 0)
@@ -38,6 +39,7 @@ def run():
     global last_mouse_pos, mouse_pos, sel1, sel2, lines
 
     mousej_inputs = pygame.mouse.get_just_pressed()
+    mouser_inputs = pygame.mouse.get_just_released()
     mouse_inputs = pygame.mouse.get_pressed()
     mouse_pos = pygame.mouse.get_pos()
     mouse_motion = (mouse_pos[0] - last_mouse_pos[0], mouse_pos[1] - last_mouse_pos[1])
@@ -50,7 +52,9 @@ def run():
 
     if mousej_inputs[2]:
         if key_inputs[K_LSHIFT]:
-            ImageBlock(blocks, mouse_pos)
+            pygame.display.iconify()
+            ImageBlock(blocks, mouse_pos).fp = input("image path -> ")
+            set_mode((0, 0), FULLSCREEN, vsync=1)
         else:
             TextBlock(blocks, mouse_pos, font)
 
@@ -77,7 +81,13 @@ def run():
             sel2 = None
 
     blocks.update(
-        mousej_inputs, mouse_inputs, mouse_pos, mouse_motion, key_inputs, events
+        mousej_inputs,
+        mouser_inputs,
+        mouse_inputs,
+        mouse_pos,
+        mouse_motion,
+        key_inputs,
+        events,
     )
 
     last_mouse_pos = mouse_pos
@@ -89,12 +99,18 @@ def draw():
     if sel1 is not None and sel2 is None:
         for b in blocks:
             b.draw_anchors(win, sel1[1])
-        pygame.draw.aaline(win, "white", sel1[0].anchors[sel1[1]], mouse_pos, 5)
+        pygame.draw.aaline(
+            win, "white", sel1[0].anchors[sel1[1]], mouse_pos, LINE_WIDTH
+        )
 
     for line in lines:
         b1, a1 = line[0]
         b2, a2 = line[1]
-        pygame.draw.aaline(win, "white", b1.anchors[a1], b2.anchors[a2], 5)
+        if not b1 in blocks or not b2 in blocks:
+            lines.remove(line)
+            continue
+
+        pygame.draw.aaline(win, "white", b1.anchors[a1], b2.anchors[a2], LINE_WIDTH)
 
     buttons.draw(win)
     labels.draw(win)
