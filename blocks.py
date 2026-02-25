@@ -158,7 +158,7 @@ class ImageBlock(Block):
     def init_data(self):
         self.scaling = False
         self.max_size = 160
-        self.original: Surface
+        self.original = None
         return super().init_data()
 
     def update(
@@ -186,7 +186,7 @@ class ImageBlock(Block):
 
     def load_original(self):
         if self.original is None:
-            self.original = pygame.image.load(self.fp).convert_alpha()
+            self.original: Surface = pygame.image.load(self.fp).convert_alpha()
 
     def update_preview(self):
         self.load_original()
