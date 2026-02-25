@@ -56,6 +56,7 @@ def run():
     mouse_inputs = pygame.mouse.get_pressed()
     mouse_pos = pygame.mouse.get_pos()
     mouse_motion = (mouse_pos[0] - last_mouse_pos[0], mouse_pos[1] - last_mouse_pos[1])
+    keyj_inputs = pygame.key.get_just_pressed()
     key_inputs = pygame.key.get_pressed()
     events = pygame.event.get()
 
@@ -63,7 +64,7 @@ def run():
         if event.type == QUIT:
             quit()
 
-    if key_inputs[K_v] and key_inputs[K_LCTRL]:
+    if keyj_inputs[K_v] and key_inputs[K_LCTRL]:
         text = pyperclip.paste()
         ImageBlock(blocks, (int(width / 2), int(height / 2)), text)
 
