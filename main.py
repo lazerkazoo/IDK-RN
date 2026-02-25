@@ -1,3 +1,4 @@
+from os.path import expanduser
 from tkinter.filedialog import askopenfilename
 
 import pygame
@@ -54,13 +55,14 @@ def run():
 
     if mousej_inputs[2]:
         if key_inputs[K_LSHIFT]:
-            pygame.display.set_mode((100, 100))
+            pygame.display.set_mode()
             pygame.display.iconify()
             fp = askopenfilename(
+                initialdir=f"{expanduser('~')}/Pictures",
                 filetypes=[
                     ("Image File", ["*.png", "*.jpg", "*.webp"]),
                     ("Vector File", "*.svg"),
-                ]
+                ],
             )
             if fp:
                 dog = ImageBlock(blocks, mouse_pos, fp)

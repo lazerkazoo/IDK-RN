@@ -165,13 +165,13 @@ class ImageBlock(Block):
         super().__init__(group, pos)
 
     def init_data(self):
-        self.max_size = (256 / 2, 256 / 2)
+        self.max_size = 224
         return super().init_data()
 
     def update_image(self):
         original = pygame.image.load(self.fp).convert()
         ow, oh = original.get_size()
-        mw, mh = self.max_size
+        mw, mh = self.max_size, self.max_size
 
         scale = min(mw / ow, mh / oh)
         new_size = (int(ow * scale), int(oh * scale))
