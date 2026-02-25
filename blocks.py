@@ -158,6 +158,7 @@ class ImageBlock(Block):
     def init_data(self):
         self.scaling = False
         self.max_size = 160
+        self.original: Surface
         return super().init_data()
 
     def update(
@@ -166,13 +167,15 @@ class ImageBlock(Block):
         if mousej_inputs[0]:
             rx, ry = self.rect.bottomright
             mx, my = mouse_pos
-            distance = ((rx - mx) ** 2 + (ry - my) ** 2) ** 0.5
-            if distance < 20:
+            distance_sq = (rx - mx) ** 2 + (ry - my) ** 2
+            if distance_sq < 100:
                 self.selected = False
                 self.scaling = True
         elif mouse_inputs[0]:
             if self.scaling:
                 self.max_size += mouse_motion[0] + mouse_motion[1]
+                self.max_size = max(20, min(self.max_size, 500))
+                self.update_preview()
         elif self.scaling:
             self.update_image()
             self.scaling = False
@@ -181,13 +184,30 @@ class ImageBlock(Block):
             mousej_inputs, mouse_inputs, mouse_pos, mouse_motion, key_inputs, events
         )
 
-    def update_image(self):
-        original = pygame.image.load(self.fp).convert_alpha()
-        ow, oh = original.get_size()
+    def load_original(self):
+        if self.original is None:
+            self.original = pygame.image.load(self.fp).convert_alpha()
+
+    def update_preview(self):
+        self.load_original()
+
+        ow, oh = self.original.get_size()
         mw, mh = self.max_size, self.max_size
 
         scale = min(mw / ow, mh / oh)
         new_size = (int(ow * scale), int(oh * scale))
 
-        self.image = pygame.transform.smoothscale(original, new_size)
-        return super().update_image()
+        self.image = pygame.transform.scale(self.original, new_size)
+        self.update_rect()
+
+    def update_image(self):
+        self.load_original()
+
+        ow, oh = self.original.get_size()
+        mw, mh = self.max_size, self.max_size
+
+        scale = min(mw / ow, mh / oh)
+        new_size = (int(ow * scale), int(oh * scale))
+
+        self.image = pygame.transform.smoothscale(self.original, new_size)
+        super().update_image()
