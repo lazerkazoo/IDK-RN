@@ -119,7 +119,7 @@ def draw():
     for line in lines:
         b1, a1 = line[0]
         b2, a2 = line[1]
-        if not b1 in blocks or not b2 in blocks:
+        if b1 not in blocks or b2 not in blocks:
             lines.remove(line)
             continue
 

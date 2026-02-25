@@ -1,5 +1,3 @@
-from os.path import exists
-
 import pygame
 from pygame.constants import K_DELETE, KEYDOWN
 from pygame.font import Font
