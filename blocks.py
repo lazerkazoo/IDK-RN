@@ -158,7 +158,7 @@ class ImageBlock(Block):
     def init_data(self):
         self.scaling = False
         self.max_size = 160
-        self.original = None
+        self.original: Surface = pygame.image.load(self.fp).convert_alpha()
         return super().init_data()
 
     def update(
@@ -174,7 +174,7 @@ class ImageBlock(Block):
         elif mouse_inputs[0]:
             if self.scaling:
                 self.max_size += mouse_motion[0] + mouse_motion[1]
-                self.max_size = max(20, min(self.max_size, 500))
+                self.max_size = max(60, min(self.max_size, 500))
                 self.update_preview()
         elif self.scaling:
             self.update_image()
@@ -184,13 +184,7 @@ class ImageBlock(Block):
             mousej_inputs, mouse_inputs, mouse_pos, mouse_motion, key_inputs, events
         )
 
-    def load_original(self):
-        if self.original is None:
-            self.original: Surface = pygame.image.load(self.fp).convert_alpha()
-
     def update_preview(self):
-        self.load_original()
-
         ow, oh = self.original.get_size()
         mw, mh = self.max_size, self.max_size
 
@@ -201,8 +195,6 @@ class ImageBlock(Block):
         self.update_rect()
 
     def update_image(self):
-        self.load_original()
-
         ow, oh = self.original.get_size()
         mw, mh = self.max_size, self.max_size
 
