@@ -24,9 +24,6 @@ font32 = Font(size=32)
 font96 = Font(size=96)
 
 # groups
-buttons = Group()
-labels = Group()
-
 blocks = Group()
 
 # connections
@@ -42,7 +39,6 @@ def run():
     global last_mouse_pos, mouse_pos, sel1, sel2, lines
 
     mousej_inputs = pygame.mouse.get_just_pressed()
-    mouser_inputs = pygame.mouse.get_just_released()
     mouse_inputs = pygame.mouse.get_pressed()
     mouse_pos = pygame.mouse.get_pos()
     mouse_motion = (mouse_pos[0] - last_mouse_pos[0], mouse_pos[1] - last_mouse_pos[1])
@@ -60,6 +56,7 @@ def run():
             fp = askopenfilename(
                 initialdir=f"{expanduser('~')}/Pictures",
                 filetypes=[
+                    ("All Files", "*"),
                     ("Image File", ["*.png", "*.jpg", "*.webp"]),
                     ("Vector File", "*.svg"),
                 ],
@@ -95,7 +92,6 @@ def run():
 
     blocks.update(
         mousej_inputs,
-        mouser_inputs,
         mouse_inputs,
         mouse_pos,
         mouse_motion,
@@ -125,8 +121,6 @@ def draw():
 
         pygame.draw.aaline(win, "white", b1.anchors[a1], b2.anchors[a2], LINE_WIDTH)
 
-    buttons.draw(win)
-    labels.draw(win)
     blocks.draw(win)
 
     win.blit(font32.render(str(round(clock.get_fps())), False, "white"), (16, 16))

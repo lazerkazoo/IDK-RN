@@ -73,14 +73,7 @@ class Block(Sprite):
         self.selected = False
 
     def update(
-        self,
-        mousej_inputs,
-        mouser_inputs,
-        mouse_inputs,
-        mouse_pos,
-        mouse_motion,
-        key_inputs,
-        events,
+        self, mousej_inputs, mouse_inputs, mouse_pos, mouse_motion, key_inputs, events
     ):
         if mousej_inputs[0]:
             if self.rect.collidepoint(mouse_pos):
@@ -163,11 +156,33 @@ class ImageBlock(Block):
         super().__init__(group, pos)
 
     def init_data(self):
-        self.max_size = 224
+        self.scaling = False
+        self.max_size = 160
         return super().init_data()
 
+    def update(
+        self, mousej_inputs, mouse_inputs, mouse_pos, mouse_motion, key_inputs, events
+    ):
+        if mousej_inputs[0]:
+            rx, ry = self.rect.bottomright
+            mx, my = mouse_pos
+            distance = ((rx - mx) ** 2 + (ry - my) ** 2) ** 0.5
+            if distance < 20:
+                self.selected = False
+                self.scaling = True
+        elif mouse_inputs[0]:
+            if self.scaling:
+                self.max_size += mouse_motion[0] + mouse_motion[1]
+        elif self.scaling:
+            self.update_image()
+            self.scaling = False
+
+        return super().update(
+            mousej_inputs, mouse_inputs, mouse_pos, mouse_motion, key_inputs, events
+        )
+
     def update_image(self):
-        original = pygame.image.load(self.fp).convert()
+        original = pygame.image.load(self.fp).convert_alpha()
         ow, oh = original.get_size()
         mw, mh = self.max_size, self.max_size
 
