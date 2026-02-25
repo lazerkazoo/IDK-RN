@@ -1,8 +1,10 @@
-from os.path import expanduser
+import subprocess
+from os.path import exists, expanduser
 from tkinter.filedialog import askopenfilename
 
 import pygame
-from pygame.constants import FULLSCREEN, K_LSHIFT, QUIT
+import pyperclip
+from pygame.constants import FULLSCREEN, K_LCTRL, K_LSHIFT, QUIT, K_v
 from pygame.display import set_mode
 from pygame.font import Font
 from pygame.sprite import Group
@@ -48,6 +50,17 @@ def run():
     for event in events:
         if event.type == QUIT:
             quit()
+
+    if key_inputs[K_v] and key_inputs[K_LCTRL]:
+        text = pyperclip.paste()
+        type = (
+            "url" if text.startswith("https://") else "path" if exists(text) else None
+        )
+        path = text if type == "path" else "/tmp/tmp"
+
+        if type == "url":
+            subprocess.run(["curl", text, "--output", "/tmp/tmp"])
+        ImageBlock(blocks, (int(width / 2), int(height / 2)), path)
 
     if mousej_inputs[2]:
         if key_inputs[K_LSHIFT]:
