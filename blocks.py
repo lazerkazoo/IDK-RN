@@ -1,3 +1,6 @@
+import subprocess
+from os.path import exists
+
 import pygame
 from pygame.constants import K_DELETE, KEYDOWN
 from pygame.font import Font
@@ -12,8 +15,8 @@ class Block(Sprite):
         self.group = group
         self.pos = pos
         self.init_data()
-        self.update_image()
-        self.update_anchors()
+        if self in self.group:
+            self.update_image()
 
     def init_data(self):
         self.anchors = {
@@ -151,15 +154,25 @@ class TextBlock(Block):
 
 
 class ImageBlock(Block):
-    def __init__(self, group: Group, pos: tuple[int, int], fp: str):
-        self.fp = fp
+    def __init__(self, group: Group, pos: tuple[int, int], url: str):
+        self.url = url
         super().__init__(group, pos)
 
+    def init_fp(self):
+        type = "path" if exists(self.url) else "url"
+        self.fp = self.url if type == "path" else "/tmp/tmp"
+        if type == "url":
+            subprocess.run(["curl", self.url, "--output", "/tmp/tmp"])
+
     def init_data(self):
+        self.init_fp()
         self.scaling = False
         self.max_size = 160
-        self.original: Surface = pygame.image.load(self.fp).convert_alpha()
-        return super().init_data()
+        try:
+            self.original: Surface = pygame.image.load(self.fp).convert_alpha()
+            return super().init_data()
+        except Exception:
+            self.kill()
 
     def update(
         self, mousej_inputs, mouse_inputs, mouse_pos, mouse_motion, key_inputs, events

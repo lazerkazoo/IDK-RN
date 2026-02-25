@@ -14,7 +14,7 @@ class Text(Sprite):
     def update_text(self, text: str):
         if text == self.last_txt:
             return
-        self.image = self.font.render(text, True, "white", "gray5").convert_alpha()
+        self.image = self.font.render(text, True, "white").convert_alpha()
         self.rect = self.image.get_rect(center=self.pos)
         self.last_txt = text
 

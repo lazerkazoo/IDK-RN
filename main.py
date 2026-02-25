@@ -1,5 +1,4 @@
-import subprocess
-from os.path import exists, expanduser
+from os.path import expanduser
 from tkinter.filedialog import askopenfilename
 
 import pygame
@@ -42,10 +41,11 @@ last_mouse_pos = (0, 0)
 Text(
     hidden,
     (width / 2, height / 2),
-    """right click: TextBlock
-Shift-right click: ImageBlock,
-can paste image from url/path""",
-    font,
+    """right click: Text
+Shift-right click: Image
+pan with middle-click
+""",
+    font32,
 )
 
 
@@ -65,14 +65,7 @@ def run():
 
     if key_inputs[K_v] and key_inputs[K_LCTRL]:
         text = pyperclip.paste()
-        type = (
-            "url" if text.startswith("https://") else "path" if exists(text) else None
-        )
-        path = text if type == "path" else "/tmp/tmp"
-
-        if type == "url":
-            subprocess.run(["curl", text, "--output", "/tmp/tmp"])
-        ImageBlock(blocks, (int(width / 2), int(height / 2)), path)
+        ImageBlock(blocks, (int(width / 2), int(height / 2)), text)
 
     if mousej_inputs[2]:
         if key_inputs[K_LSHIFT]:
@@ -107,10 +100,10 @@ def run():
                         sel1 = (block, a)
                     elif sel1 != (block, a) and sel2 is None:
                         sel2 = (block, a)
-
-                    if sel1 is not None and sel2 is not None:
+                    elif sel1 is not None and sel2 is not None:
                         lines.append((sel1, sel2))
-                        sel1, sel2 = None, None
+                        sel1 = None
+                        sel2 = None
         if break_line:
             sel1 = None
             sel2 = None
