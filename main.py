@@ -11,6 +11,7 @@ from pygame.sprite import Group
 from pygame.time import Clock
 
 from blocks import ImageBlock, TextBlock
+from widgets import Text
 
 pygame.init()
 
@@ -26,6 +27,8 @@ font32 = Font(size=32)
 font96 = Font(size=96)
 
 # groups
+hidden = Group()
+
 blocks = Group()
 
 # connections
@@ -35,6 +38,15 @@ LINE_WIDTH = 5
 
 # other
 last_mouse_pos = (0, 0)
+
+Text(
+    hidden,
+    (width / 2, height / 2),
+    """right click: TextBlock
+Shift-right click: ImageBlock,
+can paste image from url/path""",
+    font,
+)
 
 
 def run():
@@ -117,6 +129,8 @@ def run():
 
 def draw():
     win.fill("gray10")
+    if len(blocks) < 1:
+        hidden.draw(win)
 
     if sel1 is not None and sel2 is None:
         for b in blocks:
