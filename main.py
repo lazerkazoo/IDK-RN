@@ -94,14 +94,14 @@ def run():
                 ax, ay = block.anchors[a]
                 mx, my = mouse_pos
 
-                distance = ((ax - mx) ** 2 + (ay - my) ** 2) ** 0.5
-                if distance < 15:
+                distance = (ax - mx) ** 2 + (ay - my) ** 2
+                if distance < 225:
                     break_line = False
                     if sel1 is None:
                         sel1 = (block, a)
                     elif sel1 != (block, a) and sel2 is None:
                         sel2 = (block, a)
-                    elif sel1 is not None and sel2 is not None:
+                    if sel1 is not None and sel2 is not None:
                         lines.append((sel1, sel2))
                         sel1 = None
                         sel2 = None

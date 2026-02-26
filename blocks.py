@@ -180,8 +180,8 @@ class ImageBlock(Block):
         if mousej_inputs[0]:
             rx, ry = self.rect.bottomright
             mx, my = mouse_pos
-            distance_sq = (rx - mx) ** 2 + (ry - my) ** 2
-            if distance_sq < 100:
+            distance = (rx - mx) ** 2 + (ry - my) ** 2
+            if distance < 100:
                 self.selected = False
                 self.scaling = True
         elif mouse_inputs[0]:
